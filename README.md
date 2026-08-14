@@ -1,22 +1,22 @@
-# Batocera ZeDMD 128×32 P4 LED Marquee
+# Batocera ZeDMD 128x32 P4 LED Marquee
 
-A USB-driven **128×32 P4 HUB75 LED marquee for Batocera**, using an **ESP32-WROOM-32U running ZeDMD**.
+A USB-driven **128x32 P4 HUB75 LED marquee for Batocera**, using an **ESP32-WROOM-32U running ZeDMD**.
 
-The project uses two 64×32 P4 LED panels to create a wide 128×32 arcade marquee capable of displaying:
+This project uses two 64x32 P4 LED panels side-by-side to create a 128x32 arcade marquee capable of displaying:
 
 - System artwork
 - Game-specific artwork
 - Static PNG marquees
 - Animated GIF marquees
 - Pixelcade LED artwork
-- Custom startup animations
+- Random startup animations
 - Custom screensaver animation
 - Custom shutdown animation
 - Real DMD output for Virtual Pinball
 
 Communication between Batocera and the ESP32 is entirely over **USB**.
 
-No ESP32 Wi-Fi or WLED connection is required.
+**ESP32 Wi-Fi and WLED are not required.**
 
 ---
 
@@ -32,34 +32,35 @@ Panels:
 
 https://amzn.to/4wx3bSe
 
-The software and ZeDMD configuration are specifically set up for:
+The software and ZeDMD configuration are set up for:
 
 ```text
-2 × 64×32 P4 HUB75 panels
-1 row × 2 columns
-
-Combined resolution: 128×32
+Panel type:          P4 HUB75
+Panel resolution:    64x32
+Number of panels:    2
+Layout:              Horizontal
+Combined resolution: 128x32
 Total pixels:        4096
-Pixel pitch:         P4 / 4 mm
+Pixel pitch:         4 mm
 ```
 
 Physical layout:
 
 ```text
-┌────────────────┬────────────────┐
-│                   │                   │
-│      PANEL 1      │      PANEL 2      │
-│       64×32       │       64×32       │
-│                   │                   │
-└────────────────┴────────────────┘
++--------------------+--------------------+
+|                    |                    |
+|      PANEL 1       |      PANEL 2       |
+|       64x32        |       64x32        |
+|                    |                    |
++--------------------+--------------------+
 
-          128 × 32 total
+              128x32 TOTAL
 ```
 
 > [!IMPORTANT]
-> This project is configured specifically for **two 64×32 P4 panels**.
+> This project is configured specifically for **two 64x32 P4 panels arranged horizontally**.
 >
-> Different panel resolutions, scan rates, densities, or panel counts may require changes to the ZeDMD firmware/configuration.
+> Different panel resolutions, scan rates, densities, or panel counts may require changes to the ZeDMD configuration.
 
 ---
 
@@ -69,23 +70,33 @@ Cables:
 
 https://amzn.to/4fWnVOa
 
-The panels are daisy-chained for **data**:
+The HUB75 connections are daisy-chained for **data**:
 
 ```text
-ESP32
-  │
-  │ HUB75 ribbon
-  ▼
-Panel 1 IN
-  │
-  │ Panel 1 OUT
-  ▼
-Panel 2 IN
++-------------+
+|    ESP32    |
++------+------+
+       |
+       | HUB75
+       v
++-------------+
+|   PANEL 1   |
+|     IN      |
++------+------+
+       |
+       | PANEL 1 OUT
+       |     to
+       | PANEL 2 IN
+       v
++-------------+
+|   PANEL 2   |
+|     IN      |
++-------------+
 ```
 
-The HUB75 ribbon carries display signals.
+The HUB75 cables carry the display signals and ground reference.
 
-It is **not the primary power connection for the LED panels**.
+They do **not** provide the primary 5V power for the LED panels.
 
 ---
 
@@ -97,254 +108,295 @@ https://amzn.to/4gdi1XE
 
 Use the **ESP32-WROOM-32U board specified above**.
 
-This is the board used for this build and was selected specifically around the memory requirements and behavior of the HUB75/ZeDMD setup.
+This is the controller used with this build and the ZeDMD firmware configuration documented here.
 
-The ESP32 connects directly to the Batocera computer over USB:
+Connection to Batocera:
 
 ```text
-Batocera PC
-     │
-     │ USB
-     ▼
-ESP32-WROOM-32U
-     │
-     │ HUB75
-     ▼
-P4 Panels
++----------------+
+|  BATOCERA PC   |
++-------+--------+
+        |
+        | USB
+        v
++----------------+
+| ESP32-WROOM-32U|
++-------+--------+
+        |
+        | HUB75
+        v
++----------------+
+|   LED PANELS   |
++----------------+
 ```
 
-USB provides:
+The USB connection provides:
 
-- ESP32 power
-- ZeDMD serial communication
+- Power for the ESP32
+- Serial communication between Batocera and ZeDMD
 
-The ESP32 does **not** power the LED panels.
+The ESP32 does **not** supply power to the LED panels.
 
 ---
 
-## 5V LED Panel Power Supply
+# Power Supply
 
 Power supply:
 
 https://amzn.to/45uAn1z
 
-This project uses the linked **5V / 12A / 60W enclosed switching power supply**.
+This build uses the linked **BTF-LIGHTING Class 2 wall-plug power supply**.
 
-The supply powers both P4 panels.
+Specifications:
 
 ```text
+Input:           100-240V AC
 Output:          5V DC
-Maximum current: 12A
-Maximum power:   60W
+Maximum current: 10A
+Maximum power:   50W
 ```
 
-Two 64×32 P4 panels can draw substantial current at high brightness, so the 12A supply provides useful headroom for the two-panel display.
+The power supply plugs directly into a standard wall receptacle.
+
+There is:
+
+- No exposed mains wiring
+- No L/N terminal wiring
+- No separate AC input wiring
+- No open-frame power supply
+
+The adapter provides a DC barrel plug.
+
+The linked supply also includes a **barrel-jack-to-screw-terminal adapter**, which is used to connect the panel power wires.
 
 ---
 
-# Power Supply Wiring
+# Panel Power Wiring
 
-The linked PSU uses screw terminals for the AC input and 5V DC output.
-
-The labels printed on the actual unit are the authoritative reference.
-
-Typical labels are:
+The power path is:
 
 ```text
-L    = AC Live / Hot
-N    = AC Neutral
-⏚    = Protective Earth
-
-V-   = 5V DC Negative / Ground
-V+   = 5V DC Positive
++---------------------+
+|   WALL RECEPTACLE   |
++----------+----------+
+           |
+           v
++---------------------+
+| BTF-LIGHTING PSU    |
+| 5V / 10A / 50W      |
++----------+----------+
+           |
+           | DC barrel plug
+           v
++---------------------+
+| BARREL-TO-SCREW     |
+| TERMINAL ADAPTER    |
+|                     |
+|       +       -     |
++-------+-------+-----+
+        |       |
+       +5V     GND
 ```
 
-The supply may provide more than one `V+` and `V-` terminal.
-
-Those duplicate output terminals are internally common and make it easier to connect multiple loads.
+> [!IMPORTANT]
+> Check the `+` and `-` markings on the supplied screw-terminal adapter before connecting the panels.
 
 ---
 
-## AC Input
+## Connecting Both Panels
 
-Connect mains power to:
+Both LED panels are powered from the same 5V supply.
 
-```text
-AC LIVE / HOT ─────────► L
-AC NEUTRAL ────────────► N
-AC GROUND / EARTH ─────► ⏚
-```
-
-Diagram:
+The panels are connected **in parallel**.
 
 ```text
-        AC MAINS
-           │
-   ┌──────┼──────┐
-   │       │       │
-   ▼      ▼       ▼
-   L       N        ⏚
-┌────────────────────┐
-│      5V / 12A PSU      │
-│                        │
-│     V-          V+     │
-└────┬───────────┬───┘
-      │             │
-     GND           +5V
+                +--------------------> PANEL 1 RED
+                |
+ADAPTER (+) ----+
+                |
+                +--------------------> PANEL 2 RED
+
+
+                +--------------------> PANEL 1 BLACK
+                |
+ADAPTER (-) ----+
+                |
+                +--------------------> PANEL 2 BLACK
 ```
 
-> [!CAUTION]
-> The AC input side carries mains voltage.
->
-> Use proper insulation, strain relief, grounding, enclosure, and electrical protection appropriate for your installation.
->
-> Disconnect mains power before working on the wiring.
+Connection table:
 
----
+| Adapter | Connection |
+|---|---|
+| `+` | Panel 1 RED (+5V) |
+| `+` | Panel 2 RED (+5V) |
+| `-` | Panel 1 BLACK (GND) |
+| `-` | Panel 2 BLACK (GND) |
 
-# Panel Power
+Both red panel wires connect to the positive terminal.
 
-Both LED panels are powered directly from the PSU's 5V output.
+Both black panel wires connect to the negative terminal.
 
-Each panel has its own red/black power connection.
-
-```text
-RED   = +5V
-BLACK = V- / GND
-```
-
-Connect both panels in parallel:
-
-```text
-PSU V+ ─────────────► Panel 1 RED
-PSU V+ ─────────────► Panel 2 RED
-
-PSU V- ─────────────► Panel 1 BLACK
-PSU V- ─────────────► Panel 2 BLACK
-```
-
-If the power supply has multiple output terminals, the cleanest arrangement is:
-
-```text
-PSU V+ #1 ──────────► Panel 1 RED
-PSU V- #1 ──────────► Panel 1 BLACK
-
-PSU V+ #2 ──────────► Panel 2 RED
-PSU V- #2 ──────────► Panel 2 BLACK
-```
-
-This gives each panel a direct power connection back to the power supply.
+Make sure the screw terminals securely clamp the conductors.
 
 ---
 
 ## ESP32 Power
 
-The ESP32-WROOM-32U is powered independently through its USB connection to the Batocera computer:
+The ESP32 is powered separately by the Batocera computer through USB:
 
 ```text
-Batocera PC
-     │
-     │ USB
-     ▼
-ESP32-WROOM-32U
++----------------+
+|  BATOCERA PC   |
++-------+--------+
+        |
+        | USB
+        v
++----------------+
+|     ESP32      |
++----------------+
 ```
 
-Do **not** power the P4 panels from the ESP32.
+Do **not** power the P4 panels from the ESP32:
 
 ```text
-ESP32 5V ─────X────► P4 Panel
+ESP32 5V ----X----> P4 PANELS
 ```
 
-The panel load is far beyond what the ESP32's USB power connection is intended to provide.
+The panels receive their 5V power directly from the BTF-LIGHTING power supply.
 
 ---
 
 ## ESP32 Ground
 
-No additional ground jumper from the ESP32 to the PSU is required in this build.
+No additional ESP32-to-power-supply ground jumper is required in this build.
 
-The HUB75 ribbon already includes ground connections between the controller and the LED panels.
+The HUB75 connection already provides ground conductors between the controller and Panel 1.
 
-The working hardware arrangement is:
-
-```text
-Batocera PC
-     │
-     │ USB
-     ▼
-ESP32
-     │
-     │ HUB75 ribbon
-     ▼
-Panel 1
-     │
-     │ HUB75 ribbon
-     ▼
-Panel 2
-```
-
-while panel power is handled separately:
+The working arrangement is:
 
 ```text
-5V / 12A PSU
-   │
-   ├──── +5V / V- ───► Panel 1
-   │
-   └──── +5V / V- ───► Panel 2
+DATA PATH
+
++-------------+
+| BATOCERA PC |
++------+------+
+       |
+       | USB
+       v
++-------------+
+|    ESP32    |
++------+------+
+       |
+       | HUB75
+       v
++-------------+
+|   PANEL 1   |
++------+------+
+       |
+       | HUB75
+       v
++-------------+
+|   PANEL 2   |
++-------------+
+
+
+POWER PATH
+
++-------------+
+| 5V / 10A    |
+| 50W PSU     |
++------+------+
+       |
+       | DC barrel
+       v
++-------------+
+| TERMINAL    |
+| ADAPTER     |
++------+------+
+       |
+       +-------------> PANEL 1 POWER
+       |
+       +-------------> PANEL 2 POWER
 ```
 
-There is no separate:
+No separate:
 
 ```text
-ESP32 GND ─────► PSU V-
+ESP32 GND ----------> PSU NEGATIVE
 ```
 
-jumper required for the working configuration documented here.
+jumper is used in the documented working configuration.
 
 ---
 
-# Complete Power Wiring
+# Complete Hardware Wiring
 
 ```text
-                          AC MAINS
-                              │
-                   ┌────────┼────────┐
-                   │          │         │
-                   ▼         ▼         ▼
-                   L          N          ⏚
-                ┌──────────────────────┐
-                │      5V / 12A PSU        │
-                │                          │
-                │     V-            V+     │
-                └──┬──┬──────────┬──┬─┘
-                    │  │            │  │
-                    │  │            │  └────► Panel 2 RED
-                    │  │            └───────► Panel 1 RED
-                    │  │
-                    │  └──────────────────► Panel 2 BLACK
-                    └─────────────────────► Panel 1 BLACK
+POWER
+
++-----------------------+
+|    WALL RECEPTACLE    |
++-----------+-----------+
+            |
+            v
++-----------------------+
+| BTF-LIGHTING          |
+| 5V / 10A / 50W PSU    |
++-----------+-----------+
+            |
+            | DC barrel
+            v
++-----------------------+
+| BARREL-TO-SCREW       |
+| TERMINAL ADAPTER      |
++-----------+-----------+
+            |
+       +----+----+
+       |         |
+       v         v
++-----------+ +-----------+
+| PANEL 1   | | PANEL 2   |
+| 5V POWER  | | 5V POWER  |
++-----------+ +-----------+
 
 
-Batocera PC
-     │
-     │ USB
-     ▼
-ESP32-WROOM-32U
-     │
-     │ HUB75
-     ▼
-Panel 1
-     │
-     │ HUB75
-     ▼
-Panel 2
+CONTROL / DATA
+
++-----------------------+
+|      BATOCERA PC      |
++-----------+-----------+
+            |
+            | USB
+            v
++-----------------------+
+|   ESP32-WROOM-32U     |
++-----------+-----------+
+            |
+            | HUB75
+            v
++-----------------------+
+|       PANEL 1         |
+|        64x32          |
++-----------+-----------+
+            |
+            | HUB75 OUT
+            |     to
+            | PANEL 2 IN
+            v
++-----------------------+
+|       PANEL 2         |
+|        64x32          |
++-----------------------+
+
+Combined display: 128x32
 ```
 
 ---
 
-# ESP32 ↔ HUB75 Pinout
+# ESP32 to HUB75 Pinout
 
-Use the following ZeDMD pin mapping:
+The ZeDMD configuration uses the following ESP32 GPIO mapping:
 
 | HUB75 Signal | ESP32 GPIO |
 |---|---:|
@@ -364,27 +416,32 @@ Use the following ZeDMD pin mapping:
 | OE | GPIO 15 |
 | GND | ESP32 GND |
 
-For the **64×32 P4 1/16-scan panels used in this build**, the `E` address line is not required and can remain disconnected.
-
-A typical HUB75 header looks approximately like:
+A typical HUB75 signal arrangement is:
 
 ```text
-┌─────────────┐
-│ R1 │ G1       │
-│ B1 │ GND      │
-│ R2 │ G2.      │
-│ B2 │ GND      │
-│ A  │ B        │
-│ C  │ D        │
-│ CLK│ LAT      │
-│ OE │ GND      │
-└─────────────┘
++-------+-------+
+|  R1   |  G1   |
++-------+-------+
+|  B1   |  GND  |
++-------+-------+
+|  R2   |  G2   |
++-------+-------+
+|  B2   |  GND  |
++-------+-------+
+|  A    |  B    |
++-------+-------+
+|  C    |  D    |
++-------+-------+
+|  CLK  |  LAT  |
++-------+-------+
+|  OE   |  GND  |
++-------+-------+
 ```
 
 > [!CAUTION]
-> Always match the printed **signal labels** on your specific panel.
+> Match the **printed signal labels on your actual panel/HUB75 connection**.
 >
-> HUB75 connector arrangements can vary. Do not wire solely by physical connector position.
+> Do not assume connector position alone, because HUB75 panel configurations can vary.
 
 ---
 
@@ -392,40 +449,45 @@ A typical HUB75 header looks approximately like:
 
 | Component | Qty | Link |
 |---|---:|---|
-| 64×32 P4 HUB75 LED Panel | **2** | https://amzn.to/4wx3bSe |
+| 64x32 P4 HUB75 LED Panel | 2 | https://amzn.to/4wx3bSe |
 | HUB75 Cables | As needed | https://amzn.to/4fWnVOa |
-| ESP32-WROOM-32U | **1** | https://amzn.to/4gdi1XE |
-| 5V / 12A / 60W Power Supply | **1** | https://amzn.to/45uAn1z |
+| ESP32-WROOM-32U | 1 | https://amzn.to/4gdi1XE |
+| BTF-LIGHTING 5V / 10A / 50W Power Supply | 1 | https://amzn.to/45uAn1z |
 
 ---
 
 # Software Architecture
 
 ```text
-Batocera
-   │
-   ├── EmulationStation
-   ├── Pixelcade artwork
-   ├── dmd_real
-   ├── dmd-play
-   ├── startup animations
-   ├── screensaver
-   └── shutdown animation
-   │
-   │ USB
-   ▼
-ZeDMD 5.1.7
-   │
-   ▼
-ESP32-WROOM-32U
-   │
-   │ HUB75
-   ▼
-┌───────────────────────────────┐
-│        P4 64×32  │   P4 64×32      │
-└───────────────────────────────┘
++--------------------------+
+|         BATOCERA         |
+|                          |
+| - EmulationStation       |
+| - Pixelcade artwork      |
+| - dmd_real               |
+| - dmd-play               |
+| - Startup animations     |
+| - Screensaver            |
+| - Shutdown animation     |
++------------+-------------+
+             |
+             | USB
+             v
++--------------------------+
+|       ZeDMD 5.1.7        |
+|     ESP32-WROOM-32U      |
++------------+-------------+
+             |
+             | HUB75
+             v
++------------+-------------+
+|            |             |
+|  PANEL 1   |   PANEL 2   |
+|   64x32    |    64x32    |
+|            |             |
++------------+-------------+
 
-          128 × 32
+          128x32 TOTAL
 ```
 
 ---
@@ -440,16 +502,15 @@ The production installation uses **two ZIP files**.
 zedmd-5.1.7-128x32-flash-only.zip
 ```
 
-This package handles only the ESP32 firmware.
+This package handles the ESP32 firmware separately from the Batocera software installation.
 
-It downloads and flashes the known-working:
+It flashes the known-working:
 
 ```text
 ZeDMD 5.1.7
-128×32 firmware
+128x32
+USB transport
 ```
-
-Firmware flashing is intentionally kept separate from the Batocera installation.
 
 ---
 
@@ -459,7 +520,7 @@ Firmware flashing is intentionally kept separate from the Batocera installation.
 batocera-zedmd-marquee-working-combo.zip
 ```
 
-This package combines the **last known-working scripts** from:
+This package combines the last known-working scripts from:
 
 ```text
 batocera-zedmd-marquee-v3.0
@@ -469,64 +530,74 @@ batocera-zedmd-marquee-v3.2.1
 
 It handles:
 
-- Pixelcade artwork tooling/download
+- Pixelcade artwork download
 - Pixelcade artwork update checks
-- Native Batocera DMD artwork paths
+- Batocera native DMD artwork paths
 - `dmd_real`
 - ZeDMD USB configuration
 - System marquees
 - Game marquees
 - Static artwork
 - Animated artwork
-- Startup animation
+- Startup animations
 - Screensaver animation
 - Shutdown animation
 - Virtual Pinball Real DMD compatibility
 
-No experimental custom-boot firmware or later v4.x code is included.
+The experimental custom-firmware boot-animation builds are **not included**.
 
 ---
 
 # Installation Overview
 
-Use the packages in this order:
+Install in this order:
 
 ```text
-FLASH PACKAGE
-      │
-      ▼
-ZeDMD 5.1.7
-128×32
-      │
-      ▼
-Set Transport = USB
-      │
-      ▼
-EXIT ZeDMD setup
-      │
-      ▼
-BATOCERA COMBO PACKAGE
-      │
-      ├── v3.0 base
-      └── v3.2.1 animations
-      │
-      ▼
-REBOOT BATOCERA
-      │
-      ▼
-TEST
++----------------------------+
+| 1. FLASH ZeDMD FIRMWARE    |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| ZeDMD 5.1.7 / 128x32       |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| Set Transport = USB        |
+| Exit ZeDMD setup           |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| 2. INSTALL BATOCERA COMBO  |
+|                            |
+| v3.0 base                  |
+| +                          |
+| v3.2.1 animations          |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| 3. REBOOT BATOCERA         |
++-------------+--------------+
+              |
+              v
++----------------------------+
+| 4. TEST MARQUEE            |
++----------------------------+
 ```
 
 > [!IMPORTANT]
-> The reboot after the Batocera installation is required.
+> **The reboot after installing the Batocera package is required.**
 >
-> During the original working setup, the ESP32 was visible over USB but the marquee did not begin operating correctly until Batocera had been completely restarted.
+> During the original working setup, the ESP32 was detected over USB but the marquee did not begin operating correctly until Batocera had been completely restarted.
 
 ---
 
-# Step 1 — Connect the ESP32
+# Step 1 - Connect the ESP32
 
-Connect the ESP32 to the Batocera PC using USB.
+Connect the ESP32 to the Batocera PC over USB.
 
 Check detection:
 
@@ -534,22 +605,27 @@ Check detection:
 ls -l /dev/ttyUSB*
 ```
 
-Normally the ESP32 appears as:
+Normally:
 
 ```text
 /dev/ttyUSB0
 ```
 
-Depending on the USB interface, it could instead appear as:
+Depending on the USB interface, the controller could instead appear as:
 
 ```text
 /dev/ttyUSB1
+```
+
+or:
+
+```text
 /dev/ttyACM0
 ```
 
 ---
 
-# Step 2 — Flash ZeDMD
+# Step 2 - Flash ZeDMD
 
 Copy:
 
@@ -557,11 +633,11 @@ Copy:
 zedmd-5.1.7-128x32-flash-only.zip
 ```
 
-into the Batocera `share` folder.
+to the Batocera `share` folder.
 
 SSH into Batocera.
 
-Go to `/userdata`:
+Go to:
 
 ```bash
 cd /userdata
@@ -573,7 +649,7 @@ Extract:
 unzip -o zedmd-5.1.7-128x32-flash-only.zip
 ```
 
-Enter the directory:
+Enter the folder:
 
 ```bash
 cd zedmd-5.1.7-128x32-flash-only
@@ -597,13 +673,13 @@ When prompted, type:
 ZEDMD
 ```
 
-The script downloads the official ZeDMD 5.1.7 128×32 firmware and flashes it to the ESP32.
+The script flashes the known-working **ZeDMD 5.1.7 128x32 firmware** to the ESP32.
 
 ---
 
-# Step 3 — Configure ZeDMD
+# Step 3 - Configure ZeDMD
 
-After flashing, the LED panels may display the ZeDMD configuration screen.
+After flashing, the LED panels may display the ZeDMD configuration interface.
 
 Set:
 
@@ -614,7 +690,8 @@ Transport: USB
 Confirm:
 
 ```text
-Panel resolution: 128×32
+Panel width:  128
+Panel height: 32
 ```
 
 Check the RGB order.
@@ -622,53 +699,49 @@ Check the RGB order.
 The test colors should display correctly:
 
 ```text
-RED   → Red
-GREEN → Green
-BLUE  → Blue
+RED   -> Red
+GREEN -> Green
+BLUE  -> Blue
 ```
 
-Adjust RGB order if required.
+Adjust RGB order if necessary.
 
-When finished, navigate to:
+When finished, select:
 
 ```text
 Exit
 ```
 
-and exit the ZeDMD setup screen.
-
 > [!IMPORTANT]
-> Do not leave ZeDMD sitting in its configuration menu.
+> Do not leave ZeDMD sitting in its setup interface.
 >
-> Exit setup so it can enter normal USB host communication mode.
+> Select **Exit** so the controller can enter normal USB communication mode.
 
 ---
 
 # Known-Working ZeDMD Configuration
 
-The known-working configuration for this project is:
-
 | Setting | Value |
-|---|---:|
+|---|---|
 | Firmware | ZeDMD 5.1.7 |
 | Controller | ESP32-WROOM-32U |
-| Display | 128×32 |
-| Panels | 2 × 64×32 P4 |
-| Layout | 1 × 2 |
+| Display | 128x32 |
+| Panels | 2 x 64x32 P4 |
+| Layout | Horizontal |
 | Transport | USB |
-| Typical serial device | `/dev/ttyUSB0` |
-| USB package size | 512 bytes |
+| Typical device | `/dev/ttyUSB0` |
+| USB package size | 512 |
 | Minimum panel refresh | 60 Hz |
 | Wi-Fi | Not required |
 
 > [!NOTE]
 > Higher refresh values were experimented with later.
 >
-> **60 Hz is documented here because it belongs to the known-working production configuration.**
+> **60 Hz is retained here as the known-working configuration.**
 
 ---
 
-# Step 4 — Install Batocera Marquee Software
+# Step 4 - Install Batocera Marquee Software
 
 Copy:
 
@@ -676,9 +749,11 @@ Copy:
 batocera-zedmd-marquee-working-combo.zip
 ```
 
-into the Batocera `share` folder.
+to the Batocera `share` folder.
 
-SSH into Batocera:
+SSH into Batocera.
+
+Go to:
 
 ```bash
 cd /userdata
@@ -712,13 +787,13 @@ Run:
 
 # What the Installer Does
 
-The combined installer reproduces the working **v3.0 base installation** and then applies the working **v3.2.1 animation layer**.
+The combined installer reproduces the working **v3.0 base installation** and applies the working **v3.2.1 animation layer**.
 
 It:
 
 1. Removes the older WLED/custom USB marquee hooks.
 2. Installs/checks the Pixelcade artwork tooling.
-3. Downloads the Pixelcade artwork collection if needed.
+3. Downloads the Pixelcade artwork collection if required.
 4. Checks the existing artwork collection for updates.
 5. Synchronizes artwork into Batocera's native DMD paths.
 6. Enables `dmd_real`.
@@ -735,9 +810,9 @@ It:
 
 ---
 
-# Step 5 — Reboot
+# Step 5 - Reboot
 
-After the installer completes:
+After installation completes:
 
 ```bash
 reboot
@@ -746,35 +821,35 @@ reboot
 > [!IMPORTANT]
 > **Do not troubleshoot the marquee before performing this reboot.**
 >
-> During the original installation, `/dev/ttyUSB0` was present but the display did not begin working correctly until Batocera was fully restarted.
+> The reboot was necessary during the original working installation.
 
 ---
 
-# Step 6 — Test
+# Step 6 - Test
 
-After Batocera comes back up, browse through several systems and games.
+After Batocera starts again, browse through several systems and games.
 
-Expected:
+Expected system behavior:
 
 ```text
-System selected
-      │
-      ▼
-System marquee
+SYSTEM SELECTED
+      |
+      v
+SYSTEM MARQUEE
 ```
 
-and:
+Expected game behavior:
 
 ```text
-Game selected
-      │
-      ▼
-Game marquee
+GAME SELECTED
+      |
+      v
+GAME MARQUEE
 ```
 
 ---
 
-# Verify `dmd_real`
+# Verify dmd_real
 
 Check:
 
@@ -793,7 +868,9 @@ batocera-services start dmd_real
 
 # Verify ZeDMD
 
-Because `dmd_real` may hold the USB connection, stop it first:
+`dmd_real` may hold the USB connection.
+
+Stop it temporarily:
 
 ```bash
 batocera-services stop dmd_real
@@ -808,17 +885,17 @@ zedmd-client -i
 Expected basics:
 
 ```text
-Firmware: 5.1.7
-CPU: ESP32
-Transport: USB
-Device: /dev/ttyUSB0
-Panel width: 128
-Panel height: 32
+Firmware:         5.1.7
+CPU:              ESP32
+Transport:        USB
+Device:           /dev/ttyUSB0
+Panel width:      128
+Panel height:     32
 USB package size: 512
-Minimum refresh: 60
+Minimum refresh:  60
 ```
 
-Restart `dmd_real`:
+Restart the service:
 
 ```bash
 batocera-services start dmd_real
@@ -830,11 +907,9 @@ batocera-services start dmd_real
 
 The project uses Pixelcade's LED-specific artwork collection.
 
-This is preferable to ordinary scraped marquee images because the artwork is designed around low-resolution LED displays.
+This artwork is particularly useful for a 128x32 LED display because it is designed around low-resolution LED marquees rather than simply displaying full-resolution scraped marquee images.
 
-The initial artwork download can be large.
-
-That is normal.
+The initial artwork download can take some time.
 
 Allow the first download to complete.
 
@@ -886,38 +961,33 @@ It waits approximately:
 
 after startup before checking.
 
-Expected behavior:
-
 ```text
-Batocera boot
-     │
-     ▼
-Wait ~30 sec
-     │
-     ▼
-Check Pixelcade artwork
-     │
-     ├── Current
-     │      │
-     │      ▼
-     │     Done
-     │
-     └── Update available
-            │
-            ▼
-       Download update
-            │
-            ▼
-           Done
+BATOCERA BOOTS
+      |
+      v
+WAIT ~30 SECONDS
+      |
+      v
+CHECK ARTWORK
+      |
+      +---------- CURRENT ----------> DONE
+      |
+      +------ UPDATE AVAILABLE
+                    |
+                    v
+               DOWNLOAD
+                    |
+                    v
+                  DONE
 ```
 
-The entire artwork library should not be downloaded again on every boot.
+The complete artwork library should not be downloaded again on every boot when no update is required.
 
 ---
 
 # Manual Artwork Update
 
-Check:
+Check for an update:
 
 ```bash
 /userdata/system/zedmd-marquee/artwork-update.sh --check
@@ -929,7 +999,7 @@ Force an update:
 /userdata/system/zedmd-marquee/artwork-update.sh --force-update
 ```
 
-Refresh Batocera artwork links:
+Refresh the Batocera artwork links:
 
 ```bash
 /userdata/system/zedmd-marquee/sync-artwork.sh --updated
@@ -942,13 +1012,13 @@ Refresh Batocera artwork links:
 When a game is selected:
 
 ```text
-Game selected
-      │
-      ▼
-Find matching Pixelcade/Batocera artwork
-      │
-      ▼
-Display PNG/GIF
+GAME SELECTED
+      |
+      v
+FIND MATCHING ARTWORK
+      |
+      v
+DISPLAY PNG OR GIF
 ```
 
 Both static PNG and animated GIF artwork are supported.
@@ -957,42 +1027,27 @@ Both static PNG and animated GIF artwork are supported.
 
 # Static Artwork During Gameplay
 
-The working configuration intentionally avoids replacing a valid game marquee when the game launches.
-
-Previous behavior:
-
-```text
-Game selected
-      │
-      ▼
-Game artwork
-      │
-      ▼
-Launch game
-      │
-      ▼
-Scrolling game title
-```
+The working configuration avoids replacing valid game artwork with a scrolling text title when a game launches.
 
 Desired behavior:
 
 ```text
-Game selected
-      │
-      ▼
-Game artwork
-      │
-      ▼
-Launch game
-      │
-      ▼
-Send nothing new
-      │
-      ▼
-Existing artwork remains
+GAME SELECTED
+      |
+      v
+GAME ARTWORK
+      |
+      v
+LAUNCH GAME
+      |
+      v
+NO NEW MARQUEE COMMAND
+      |
+      v
+GAME ARTWORK REMAINS
 ```
 
-This is especially useful for static artwork because the image can remain on the panels without constant communication.
+This is particularly useful with static artwork because the image can remain displayed without continuously retransmitting it.
 
 ---
 
@@ -1004,24 +1059,30 @@ After Batocera starts, the v3.2.1 animation layer waits approximately:
 6 seconds
 ```
 
-It then chooses **one random local GIF**.
+It chooses **one random local GIF**.
 
-The same GIF plays **twice total**:
+That same animation plays **two times total**.
 
 ```text
-Choose random GIF
-       │
-       ▼
-     Play #1
-       │
-       ▼
-     Play #2
-       │
-       ▼
-Normal marquee operation
+BATOCERA STARTS
+      |
+      v
+WAIT ~6 SECONDS
+      |
+      v
+CHOOSE RANDOM GIF
+      |
+      v
+PLAY #1
+      |
+      v
+PLAY #2
+      |
+      v
+NORMAL MARQUEE OPERATION
 ```
 
-A new random GIF is not chosen for the second play.
+A different random GIF is **not** selected between the first and second play.
 
 ---
 
@@ -1029,7 +1090,7 @@ A new random GIF is not chosen for the second play.
 
 The configured screensaver is the Dr. Mario animation.
 
-The setup searches for:
+The setup searches for filenames including:
 
 ```text
 drnario.gif
@@ -1038,7 +1099,7 @@ drmario.gif
 *doctor*mario*.gif
 ```
 
-The matching file is configured as:
+The selected animation is configured as:
 
 ```text
 /userdata/system/dmd/screensaver.gif
@@ -1047,13 +1108,13 @@ The matching file is configured as:
 Expected behavior:
 
 ```text
-Batocera idle
-      │
-      ▼
-Screensaver begins
-      │
-      ▼
-Dr. Mario animation
+BATOCERA IDLE
+      |
+      v
+SCREENSAVER STARTS
+      |
+      v
+DR. MARIO GIF
 ```
 
 ---
@@ -1068,20 +1129,20 @@ supermarioallstartheend.gif
 
 The installer can also search compatible filename variations.
 
-Expected shutdown:
+Expected behavior:
 
 ```text
-Shutdown selected
-        │
-        ▼
-Super Mario All-Stars
-"The End"
-        │
-        ▼
-Play once
-        │
-        ▼
-Batocera powers off
+SHUTDOWN SELECTED
+       |
+       v
+SUPER MARIO ALL-STARS
+"THE END" GIF
+       |
+       v
+PLAY ONCE
+       |
+       v
+BATOCERA POWERS OFF
 ```
 
 ---
@@ -1098,49 +1159,68 @@ This re-scans the available artwork for:
 
 - Dr. Mario
 - Super Mario All-Stars ending
-- other available animations
+- Other available startup animations
 
 ---
 
 # Virtual Pinball / Real DMD
 
-The project deliberately uses native ZeDMD and Batocera's `dmd_real` architecture.
+This project uses native ZeDMD and Batocera's `dmd_real` architecture.
 
-This means the same physical display can be used as a Real DMD by compatible Virtual Pinball software.
+That allows the same physical 128x32 display to be used as a Real DMD by compatible Virtual Pinball software.
+
+Normal Batocera use:
 
 ```text
-EmulationStation
-      │
-      ▼
-dmd_real
-      │
-      ▼
-ZeDMD
-      │
-      ▼
-128×32 P4 display
++-------------------+
+| EMULATIONSTATION  |
++---------+---------+
+          |
+          v
++-------------------+
+|     dmd_real      |
++---------+---------+
+          |
+          v
++-------------------+
+|       ZeDMD       |
++---------+---------+
+          |
+          v
++-------------------+
+| 128x32 LED DISPLAY|
++-------------------+
 ```
 
-and:
+Virtual Pinball:
 
 ```text
-Virtual Pinball / PinMAME
-           │
-           ▼
-       Real DMD output
-           │
-           ▼
-         ZeDMD
-           │
-           ▼
-    same 128×32 display
++-------------------+
+| VIRTUAL PINBALL   |
+| / PINMAME         |
++---------+---------+
+          |
+          v
++-------------------+
+| REAL DMD OUTPUT   |
++---------+---------+
+          |
+          v
++-------------------+
+|       ZeDMD       |
++---------+---------+
+          |
+          v
++-------------------+
+| 128x32 LED DISPLAY|
++-------------------+
 ```
 
 ---
 
 # Diagnostics
 
-After the required reboot, run:
+After the required reboot:
 
 ```bash
 /userdata/system/zedmd-marquee/diagnose.sh
@@ -1170,7 +1250,7 @@ and:
 ls -l /dev/ttyACM*
 ```
 
-Normally:
+Normally the device is:
 
 ```text
 /dev/ttyUSB0
@@ -1178,7 +1258,7 @@ Normally:
 
 ---
 
-## `dmd_real` Not Running
+## dmd_real Not Running
 
 Check:
 
@@ -1197,7 +1277,7 @@ batocera-services start dmd_real
 
 ## ZeDMD Client Cannot Connect
 
-First make sure `dmd_real` is stopped:
+Stop `dmd_real` first:
 
 ```bash
 batocera-services stop dmd_real
@@ -1225,7 +1305,7 @@ batocera-services start dmd_real
 reboot
 ```
 
-This was necessary during the original working installation.
+This was required during the original working installation.
 
 ---
 
@@ -1275,9 +1355,10 @@ find /userdata/system/wled-marquee/pixelcade-art \
 
 - Batocera 42+
 - ESP32-WROOM-32U
-- 2 × 64×32 P4 HUB75 panels
-- HUB75 ribbon cables
-- 5V / 12A / 60W linked power supply
+- 2 x 64x32 P4 HUB75 LED panels
+- HUB75 cables
+- BTF-LIGHTING 5V / 10A / 50W power supply
+- Barrel-to-screw-terminal adapter
 - USB connection between Batocera and ESP32
 - Internet access during initial installation
 - `python3`
@@ -1289,7 +1370,7 @@ find /userdata/system/wled-marquee/pixelcade-art \
 
 ## Not Required
 
-The working production setup does **not** require:
+The known-working production setup does **not** require:
 
 ```text
 Git
@@ -1303,85 +1384,74 @@ ESP32 Wi-Fi
 # Complete Installation Sequence
 
 ```text
-┌─────────────────────────────────────┐
-│ BUILD HARDWARE                             │
-│                                            │
-│ 2 × 64×32 P4 panels                        │
-│ ESP32-WROOM-32U                            │
-│ 5V / 12A PSU                               │
-└──────────────────┬──────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────┐
-│ FLASH PACKAGE                              │
-│                                            │
-│ zedmd-5.1.7-128x32-flash-only.zip          │
-└──────────────────┬──────────────────┘
-                   │
-                   ▼
-            ZeDMD 5.1.7
-                   │
-                   ▼
-             Transport USB
-                   │
-                   ▼
-          EXIT ZeDMD setup
-                   │
-                   ▼
-┌─────────────────────────────────────┐
-│ BATOCERA PACKAGE                           │
-│                                            │
-│ batocera-zedmd-marquee-working-            │
-│ combo.zip                                  │
-│                                            │
-│ v3.0 + v3.2.1 working scripts              │
-└──────────────────┬──────────────────┘
-                   │
-                   ▼
-             dmd_real
-                   │
-                   ├── Pixelcade artwork
-                   ├── 512-byte USB
-                   ├── 60 Hz refresh
-                   ├── startup GIF ×2
-                   ├── Dr. Mario
-                   └── Mario shutdown
-                   │
-                   ▼
-          ┌─────────────────┐
-          │ REBOOT REQUIRED    │
-          └────────┬────────┘
-                   │
-                   ▼
-           TEST MARQUEES
-                   │
-                   ▼
-                 DONE
++--------------------------------+
+|       BUILD HARDWARE           |
+|                                |
+| 2 x 64x32 P4 panels            |
+| ESP32-WROOM-32U                |
+| 5V / 10A / 50W PSU             |
++---------------+----------------+
+                |
+                v
++--------------------------------+
+|       FLASH FIRMWARE           |
+|                                |
+| zedmd-5.1.7-128x32-            |
+| flash-only.zip                 |
++---------------+----------------+
+                |
+                v
++--------------------------------+
+|       ZeDMD 5.1.7              |
+|                                |
+| 128x32                         |
+| Transport: USB                 |
+| Exit setup                     |
++---------------+----------------+
+                |
+                v
++--------------------------------+
+|    INSTALL BATOCERA PACKAGE    |
+|                                |
+| v3.0 base + v3.2.1 animations  |
++---------------+----------------+
+                |
+                v
++--------------------------------+
+|           dmd_real             |
+|                                |
+| Pixelcade artwork              |
+| 512-byte USB packets           |
+| 60 Hz minimum refresh          |
+| Random startup GIF x2          |
+| Dr. Mario screensaver          |
+| Mario shutdown animation       |
++---------------+----------------+
+                |
+                v
++================================+
+|        REBOOT REQUIRED         |
++================================+
+                |
+                v
++--------------------------------+
+|        TEST MARQUEES           |
++---------------+----------------+
+                |
+                v
++--------------------------------+
+|             DONE               |
++--------------------------------+
 ```
 
 ---
 
 # Production Files
 
-The production setup consists of these two files:
+The production setup consists of these two packages:
 
 ```text
 zedmd-5.1.7-128x32-flash-only.zip
 
 batocera-zedmd-marquee-working-combo.zip
 ```
-
-These represent the **known-working installation path**.
-
-Later experiments involving:
-
-```text
-Custom ZeDMD boot firmware
-Custom boot GIF firmware
-Git-based firmware builders
-PlatformIO
-Windows compilation
-v4.x consolidated packages
-```
-
-are **not part of this production setup**.
