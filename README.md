@@ -128,183 +128,56 @@ Power supply:
 
 https://amzn.to/45uAn1z
 
-The selected supply provides:
+This project uses the linked **5V / 12A / 60W enclosed switching power supply**.
+
+The supply powers both P4 panels.
 
 ```text
-Input:          AC 100–240V
-Output:         DC 5V
+Output:          5V DC
 Maximum current: 12A
 Maximum power:   60W
 ```
 
-This single power supply powers **both P4 panels**.
-
-A 64×32 P4 HUB75 panel of this class can draw roughly 4A at 5V under a high/full load.
-
-For two panels:
-
-```text
-Panel 1:  5V × ~4A ≈ 20W
-Panel 2:  5V × ~4A ≈ 20W
-─────────────────────────
-Potential load:   ~8A
-                  ~40W
-```
-
-The selected supply provides:
-
-```text
-5V × 12A = 60W
-```
-
-giving useful headroom for the two-panel display.
+Two 64×32 P4 panels can draw substantial current at high brightness, so the 12A supply provides useful headroom for the two-panel display.
 
 ---
 
 # Power Supply Wiring
 
-The power supply has separate **AC input** and **5V DC output** terminals.
+The linked PSU uses screw terminals for the AC input and 5V DC output.
 
-A typical terminal arrangement may look like:
-
-```text
-┌─────────────────────────────────────┐
-│  L    N    ⏚    V-   V-   V+   V+ │
-└─────────────────────────────────────┘
-   │    │    │     │         │
-   │    │    │     │         └── +5V DC
-   │    │    │     └──────────── DC Ground
-   │    │    └────────────────── Earth
-   │    └─────────────────────── Neutral
-   └──────────────────────────── Live
-```
-
-> [!IMPORTANT]
-> Follow the labels printed on your actual power supply.
->
-> The physical terminal order can vary between manufacturers.
-
----
-
-## AC Input Wiring
-
-Connect mains power to:
-
-```text
-AC HOT / LIVE ─────────────► L
-
-AC NEUTRAL ────────────────► N
-
-AC PROTECTIVE EARTH ───────► ⏚ / FG
-```
-
-Diagram:
-
-```text
-        AC MAINS
-           │
-     ┌─────┼─────┐
-     │     │     │
-     ▼     ▼     ▼
-     L     N     ⏚
-   ┌─────────────────┐
-   │   5V 12A PSU    │
-   │                 │
-   │       V-    V+  │
-   └────────┬─────┬──┘
-            │     │
-           GND   +5V
-```
-
-> [!CAUTION]
-> `L` and `N` involve mains voltage.
->
-> Use an enclosed/finger-safe installation, proper insulation, strain relief, grounding, and an appropriately protected AC connection.
->
-> Disconnect mains power before working on any wiring.
-
----
-
-# DC Panel Power Wiring
-
-Both LED panels should be connected **directly and in parallel** to the 5V supply.
-
-Do not power Panel 2 through Panel 1.
-
-```text
-                     ┌────► Panel 1 RED (+5V)
-                     │
-PSU V+ (+5V) ─────────┤
-                     │
-                     └────► Panel 2 RED (+5V)
-
-
-                     ┌────► Panel 1 BLACK (GND)
-                     │
-PSU V- (GND) ─────────┤
-                     │
-                     └────► Panel 2 BLACK (GND)
-```
-
-So:
-
-| PSU Terminal | Connection |
-|---|---|
-| V+ | Panel 1 RED |
-| V+ | Panel 2 RED |
-| V- | Panel 1 BLACK |
-| V- | Panel 2 BLACK |
-
-If the power supply provides multiple `V+` and `V-` terminals, dedicate a pair to each panel:
-Power Supply
-
-Use the power supply linked for this build:
-
-https://amzn.to/45uAn1z
-
-This project is documented specifically around that 5V / 12A / 60W enclosed switching power supply.
-
-The supply powers both P4 HUB75 panels.
-
-Output:          5V DC
-Maximum current: 12A
-Maximum power:   60W
-
-Two 64×32 P4 panels can draw substantial current at high brightness, so a 12A supply provides appropriate headroom for the two-panel display.
-
----
-
-Power Supply Terminals
-
-The supplied PSU uses screw terminals for both AC input and 5V DC output.
-
-The labels on the actual unit are the authoritative reference.
+The labels printed on the actual unit are the authoritative reference.
 
 Typical labels are:
 
+```text
 L    = AC Live / Hot
 N    = AC Neutral
 ⏚    = Protective Earth
 
 V-   = 5V DC Negative / Ground
 V+   = 5V DC Positive
+```
 
-The supply may provide more than one "V+" and "V-" terminal.
+The supply may provide more than one `V+` and `V-` terminal.
 
-Those duplicate output terminals are internally common and are provided to make connecting multiple loads easier.
+Those duplicate output terminals are internally common and make it easier to connect multiple loads.
 
 ---
 
-AC Input
+## AC Input
 
-Connect the incoming AC supply to:
+Connect mains power to:
 
+```text
 AC LIVE / HOT ─────────► L
 AC NEUTRAL ────────────► N
 AC GROUND / EARTH ─────► ⏚
+```
 
 Diagram:
 
+```text
        AC MAINS
           │
    ┌──────┼──────┐
@@ -318,69 +191,83 @@ Diagram:
 └────┬───────────┬───┘
      │           │
     GND         +5V
+```
 
-«[!CAUTION]
-The AC input side carries mains voltage.
-
-Use proper insulation, strain relief, grounding, enclosure, and electrical protection appropriate for your installation. Disconnect power before working on the wiring.»
+> [!CAUTION]
+> The AC input side carries mains voltage.
+>
+> Use proper insulation, strain relief, grounding, enclosure, and electrical protection appropriate for your installation.
+>
+> Disconnect mains power before working on the wiring.
 
 ---
 
-Panel Power
+# Panel Power
 
 Both LED panels are powered directly from the PSU's 5V output.
 
 Each panel has its own red/black power connection.
 
+```text
 RED   = +5V
 BLACK = V- / GND
+```
 
 Connect both panels in parallel:
 
+```text
 PSU V+ ─────────────► Panel 1 RED
 PSU V+ ─────────────► Panel 2 RED
 
 PSU V- ─────────────► Panel 1 BLACK
 PSU V- ─────────────► Panel 2 BLACK
+```
 
 If the power supply has multiple output terminals, the cleanest arrangement is:
 
+```text
 PSU V+ #1 ──────────► Panel 1 RED
 PSU V- #1 ──────────► Panel 1 BLACK
 
 PSU V+ #2 ──────────► Panel 2 RED
 PSU V- #2 ──────────► Panel 2 BLACK
+```
 
-This gives each panel a direct connection back to the power supply.
+This gives each panel a direct power connection back to the power supply.
 
 ---
 
-ESP32 Power
+## ESP32 Power
 
 The ESP32-WROOM-32U is powered independently through its USB connection to the Batocera computer:
 
+```text
 Batocera PC
      │
      │ USB
      ▼
 ESP32-WROOM-32U
+```
 
-Do not power the P4 panels from the ESP32.
+Do **not** power the P4 panels from the ESP32.
 
+```text
 ESP32 5V ─────X────► P4 Panel
+```
 
 The panel load is far beyond what the ESP32's USB power connection is intended to provide.
 
 ---
 
-ESP32 Ground
+## ESP32 Ground
 
-No additional ground wire from the ESP32 to the PSU is required in this build.
+No additional ground jumper from the ESP32 to the PSU is required in this build.
 
-The HUB75 ribbon cable already includes ground connections between the ESP32/HUB75 interface and the LED panels.
+The HUB75 ribbon already includes ground connections between the controller and the LED panels.
 
-The wiring used for this project is therefore:
+The working hardware arrangement is:
 
+```text
 Batocera PC
      │
      │ USB
@@ -394,25 +281,31 @@ Panel 1
      │ HUB75 ribbon
      ▼
 Panel 2
+```
 
-with panel power handled separately:
+while panel power is handled separately:
 
+```text
 5V / 12A PSU
    │
    ├──── +5V / V- ───► Panel 1
    │
    └──── +5V / V- ───► Panel 2
+```
 
 There is no separate:
 
+```text
 ESP32 GND ─────► PSU V-
+```
 
-wire required for the working hardware configuration documented here.
+jumper required for the working configuration documented here.
 
 ---
 
-Complete Power Wiring
+# Complete Power Wiring
 
+```text
                         AC MAINS
                             │
                    ┌────────┼────────┐
@@ -424,7 +317,6 @@ Complete Power Wiring
                 │                      │
                 │   V-            V+   │
                 └──┬──┬──────────┬──┬─┘
-                   │  │          │  │
                    │  │          │  │
                    │  │          │  └────► Panel 2 RED
                    │  │          └───────► Panel 1 RED
@@ -446,8 +338,7 @@ Panel 1
      │ HUB75
      ▼
 Panel 2
-
-The two systems meet through the HUB75 data connection; no additional ESP32-to-PSU ground jumper is required.
+```
 
 ---
 
@@ -497,45 +388,14 @@ A typical HUB75 header looks approximately like:
 
 ---
 
-# Complete Hardware Architecture
+# Hardware Shopping List
 
-```text
-                          AC MAINS
-                              │
-                     ┌────────┼────────┐
-                     │        │        │
-                     L        N        ⏚
-                     │        │        │
-                  ┌───────────────────────┐
-                  │      5V / 12A PSU     │
-                  │                       │
-                  │    V-            V+   │
-                  └────┬──────────────┬───┘
-                       │              │
-              ┌────────┼──────┐       ├────────► Panel 1 +5V
-              │        │      │       │
-              │        │      │       └────────► Panel 2 +5V
-              │        │      │
-              ▼        ▼      ▼
-           ESP32    Panel 1 Panel 2
-            GND       GND     GND
-             ▲
-             │
-             │ USB
-             │
-        Batocera PC
-
-
-        ESP32 HUB75
-             │
-             ▼
-        Panel 1 IN
-             │
-        Panel 1 OUT
-             │
-             ▼
-        Panel 2 IN
-```
+| Component | Qty | Link |
+|---|---:|---|
+| 64×32 P4 HUB75 LED Panel | **2** | https://amzn.to/4wx3bSe |
+| HUB75 Cables | As needed | https://amzn.to/4fWnVOa |
+| ESP32-WROOM-32U | **1** | https://amzn.to/4gdi1XE |
+| 5V / 12A / 60W Power Supply | **1** | https://amzn.to/45uAn1z |
 
 ---
 
@@ -623,7 +483,7 @@ It handles:
 - Shutdown animation
 - Virtual Pinball Real DMD compatibility
 
-No experimental v4.x/custom-boot code is included.
+No experimental custom-boot firmware or later v4.x code is included.
 
 ---
 
@@ -875,7 +735,7 @@ It:
 
 ---
 
-# Step 5 — REBOOT
+# Step 5 — Reboot
 
 After the installer completes:
 
@@ -1417,7 +1277,7 @@ find /userdata/system/wled-marquee/pixelcade-art \
 - ESP32-WROOM-32U
 - 2 × 64×32 P4 HUB75 panels
 - HUB75 ribbon cables
-- 5V / 12A / 60W panel power supply
+- 5V / 12A / 60W linked power supply
 - USB connection between Batocera and ESP32
 - Internet access during initial installation
 - `python3`
@@ -1440,17 +1300,6 @@ ESP32 Wi-Fi
 
 ---
 
-# Hardware Shopping List
-
-| Component | Qty | Link |
-|---|---:|---|
-| 64×32 P4 HUB75 LED Panel | **2** | https://amzn.to/4wx3bSe |
-| HUB75 Cables | As needed | https://amzn.to/4fWnVOa |
-| ESP32-WROOM-32U | **1** | https://amzn.to/4gdi1XE |
-| 5V / 12A / 60W Power Supply | **1** | https://amzn.to/45uAn1z |
-
----
-
 # Complete Installation Sequence
 
 ```text
@@ -1460,7 +1309,6 @@ ESP32 Wi-Fi
 │ 2 × 64×32 P4 panels                 │
 │ ESP32-WROOM-32U                     │
 │ 5V / 12A PSU                        │
-│ shared DC ground                    │
 └──────────────────┬──────────────────┘
                    │
                    ▼
@@ -1522,3 +1370,18 @@ zedmd-5.1.7-128x32-flash-only.zip
 
 batocera-zedmd-marquee-working-combo.zip
 ```
+
+These represent the **known-working installation path**.
+
+Later experiments involving:
+
+```text
+Custom ZeDMD boot firmware
+Custom boot GIF firmware
+Git-based firmware builders
+PlatformIO
+Windows compilation
+v4.x consolidated packages
+```
+
+are **not part of this production setup**.
