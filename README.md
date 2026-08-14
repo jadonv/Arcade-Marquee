@@ -47,10 +47,10 @@ Physical layout:
 
 ```text
 ┌────────────────┬────────────────┐
-│                │                │
-│    PANEL 1     │    PANEL 2     │
-│     64×32      │     64×32      │
-│                │                │
+│                   │                   │
+│      PANEL 1      │      PANEL 2      │
+│       64×32       │       64×32       │
+│                   │                   │
 └────────────────┴────────────────┘
 
           128 × 32 total
@@ -178,19 +178,19 @@ AC GROUND / EARTH ─────► ⏚
 Diagram:
 
 ```text
-       AC MAINS
-          │
+        AC MAINS
+           │
    ┌──────┼──────┐
-   │      │      │
-   ▼      ▼      ▼
-   L      N      ⏚
+   │       │       │
+   ▼      ▼       ▼
+   L       N        ⏚
 ┌────────────────────┐
-│    5V / 12A PSU    │
-│                    │
-│   V-          V+   │
+│      5V / 12A PSU      │
+│                        │
+│     V-          V+     │
 └────┬───────────┬───┘
-     │           │
-    GND         +5V
+      │             │
+     GND           +5V
 ```
 
 > [!CAUTION]
@@ -306,23 +306,23 @@ jumper required for the working configuration documented here.
 # Complete Power Wiring
 
 ```text
-                        AC MAINS
-                            │
+                          AC MAINS
+                              │
                    ┌────────┼────────┐
-                   │        │        │
-                   ▼        ▼        ▼
-                   L        N        ⏚
+                   │          │         │
+                   ▼         ▼         ▼
+                   L          N          ⏚
                 ┌──────────────────────┐
-                │    5V / 12A PSU      │
-                │                      │
-                │   V-            V+   │
+                │      5V / 12A PSU        │
+                │                          │
+                │     V-            V+     │
                 └──┬──┬──────────┬──┬─┘
-                   │  │          │  │
-                   │  │          │  └────► Panel 2 RED
-                   │  │          └───────► Panel 1 RED
-                   │  │
-                   │  └──────────────────► Panel 2 BLACK
-                   └─────────────────────► Panel 1 BLACK
+                    │  │            │  │
+                    │  │            │  └────► Panel 2 RED
+                    │  │            └───────► Panel 1 RED
+                    │  │
+                    │  └──────────────────► Panel 2 BLACK
+                    └─────────────────────► Panel 1 BLACK
 
 
 Batocera PC
@@ -370,14 +370,14 @@ A typical HUB75 header looks approximately like:
 
 ```text
 ┌─────────────┐
-│ R1 │ G1     │
-│ B1 │ GND    │
-│ R2 │ G2     │
-│ B2 │ GND    │
-│ A  │ B      │
-│ C  │ D      │
-│ CLK│ LAT    │
-│ OE │ GND    │
+│ R1 │ G1       │
+│ B1 │ GND      │
+│ R2 │ G2.      │
+│ B2 │ GND      │
+│ A  │ B        │
+│ C  │ D        │
+│ CLK│ LAT      │
+│ OE │ GND      │
 └─────────────┘
 ```
 
