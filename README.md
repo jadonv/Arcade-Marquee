@@ -422,7 +422,7 @@ ESP32-WROOM-32U
    │ HUB75
    ▼
 ┌───────────────────────────────┐
-│    P4 64×32  │   P4 64×32    │
+│        P4 64×32  │   P4 64×32      │
 └───────────────────────────────┘
 
           128 × 32
@@ -1304,18 +1304,18 @@ ESP32 Wi-Fi
 
 ```text
 ┌─────────────────────────────────────┐
-│ BUILD HARDWARE                      │
-│                                     │
-│ 2 × 64×32 P4 panels                 │
-│ ESP32-WROOM-32U                     │
-│ 5V / 12A PSU                        │
+│ BUILD HARDWARE                             │
+│                                            │
+│ 2 × 64×32 P4 panels                        │
+│ ESP32-WROOM-32U                            │
+│ 5V / 12A PSU                               │
 └──────────────────┬──────────────────┘
-                   │
-                   ▼
+                       │
+                       ▼
 ┌─────────────────────────────────────┐
-│ FLASH PACKAGE                       │
-│                                     │
-│ zedmd-5.1.7-128x32-flash-only.zip   │
+│ FLASH PACKAGE                              │
+│                                            │
+│ zedmd-5.1.7-128x32-flash-only.zip          │
 └──────────────────┬──────────────────┘
                    │
                    ▼
@@ -1329,12 +1329,12 @@ ESP32 Wi-Fi
                    │
                    ▼
 ┌─────────────────────────────────────┐
-│ BATOCERA PACKAGE                    │
-│                                     │
-│ batocera-zedmd-marquee-working-     │
-│ combo.zip                           │
-│                                     │
-│ v3.0 + v3.2.1 working scripts       │
+│ BATOCERA PACKAGE                           │
+│                                            │
+│ batocera-zedmd-marquee-working-            │
+│ combo.zip                                  │
+│                                            │
+│ v3.0 + v3.2.1 working scripts              │
 └──────────────────┬──────────────────┘
                    │
                    ▼
@@ -1349,7 +1349,7 @@ ESP32 Wi-Fi
                    │
                    ▼
           ┌─────────────────┐
-          │ REBOOT REQUIRED │
+          │ REBOOT REQUIRED    │
           └────────┬────────┘
                    │
                    ▼
