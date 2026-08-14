@@ -256,88 +256,198 @@ So:
 | V- | Panel 2 BLACK |
 
 If the power supply provides multiple `V+` and `V-` terminals, dedicate a pair to each panel:
+Power Supply
 
-```text
-PSU V+ #1 ─────────► Panel 1 RED
-PSU V- #1 ─────────► Panel 1 BLACK
+Use the power supply linked for this build:
 
-PSU V+ #2 ─────────► Panel 2 RED
-PSU V- #2 ─────────► Panel 2 BLACK
-```
+https://amzn.to/45uAn1z
 
-The duplicate output terminals on this style of PSU are internally common and make distributing the load easier.
+This project is documented specifically around that 5V / 12A / 60W enclosed switching power supply.
 
----
+The supply powers both P4 HUB75 panels.
 
-# ESP32 Common Ground
+Output:          5V DC
+Maximum current: 12A
+Maximum power:   60W
 
-The ESP32 is powered by USB from the Batocera PC.
-
-The LED panels are powered by the separate 5V supply.
-
-Because the ESP32 is sending digital signals to the panels, the controller and panels need a **common voltage reference**.
-
-Connect:
-
-```text
-ESP32 GND ─────────► PSU V-
-```
-
-The complete low-voltage power arrangement is therefore:
-
-```text
-                    BATOCERA PC
-                         │
-                         │ USB
-                         ▼
-                   ┌───────────┐
-                   │   ESP32   │
-                   └─────┬─────┘
-                         │
-                        GND
-                         │
-                         ▼
-                    PSU V- / GND
-                     /        \
-                    /          \
-             Panel 1 GND    Panel 2 GND
-
-
-                    PSU V+ / +5V
-                     /        \
-                    /          \
-             Panel 1 +5V    Panel 2 +5V
-```
-
-> [!IMPORTANT]
-> ESP32 GND connects to the power supply's **DC `V-` terminal**.
->
-> It does **not** connect to the PSU's AC protective-earth terminal as a substitute for DC ground.
+Two 64×32 P4 panels can draw substantial current at high brightness, so a 12A supply provides appropriate headroom for the two-panel display.
 
 ---
 
-# Do Not Power the Panels From the ESP32
+Power Supply Terminals
 
-Never do this:
+The supplied PSU uses screw terminals for both AC input and 5V DC output.
 
-```text
+The labels on the actual unit are the authoritative reference.
+
+Typical labels are:
+
+L    = AC Live / Hot
+N    = AC Neutral
+⏚    = Protective Earth
+
+V-   = 5V DC Negative / Ground
+V+   = 5V DC Positive
+
+The supply may provide more than one "V+" and "V-" terminal.
+
+Those duplicate output terminals are internally common and are provided to make connecting multiple loads easier.
+
+---
+
+AC Input
+
+Connect the incoming AC supply to:
+
+AC LIVE / HOT ─────────► L
+AC NEUTRAL ────────────► N
+AC GROUND / EARTH ─────► ⏚
+
+Diagram:
+
+       AC MAINS
+          │
+   ┌──────┼──────┐
+   │      │      │
+   ▼      ▼      ▼
+   L      N      ⏚
+┌────────────────────┐
+│    5V / 12A PSU    │
+│                    │
+│   V-          V+   │
+└────┬───────────┬───┘
+     │           │
+    GND         +5V
+
+«[!CAUTION]
+The AC input side carries mains voltage.
+
+Use proper insulation, strain relief, grounding, enclosure, and electrical protection appropriate for your installation. Disconnect power before working on the wiring.»
+
+---
+
+Panel Power
+
+Both LED panels are powered directly from the PSU's 5V output.
+
+Each panel has its own red/black power connection.
+
+RED   = +5V
+BLACK = V- / GND
+
+Connect both panels in parallel:
+
+PSU V+ ─────────────► Panel 1 RED
+PSU V+ ─────────────► Panel 2 RED
+
+PSU V- ─────────────► Panel 1 BLACK
+PSU V- ─────────────► Panel 2 BLACK
+
+If the power supply has multiple output terminals, the cleanest arrangement is:
+
+PSU V+ #1 ──────────► Panel 1 RED
+PSU V- #1 ──────────► Panel 1 BLACK
+
+PSU V+ #2 ──────────► Panel 2 RED
+PSU V- #2 ──────────► Panel 2 BLACK
+
+This gives each panel a direct connection back to the power supply.
+
+---
+
+ESP32 Power
+
+The ESP32-WROOM-32U is powered independently through its USB connection to the Batocera computer:
+
+Batocera PC
+     │
+     │ USB
+     ▼
+ESP32-WROOM-32U
+
+Do not power the P4 panels from the ESP32.
+
 ESP32 5V ─────X────► P4 Panel
-```
 
-The LED panels can draw several amps.
+The panel load is far beyond what the ESP32's USB power connection is intended to provide.
 
-The ESP32's USB connection cannot supply the panel load.
+---
 
-Correct:
+ESP32 Ground
 
-```text
-Batocera USB ─────────► ESP32
+No additional ground wire from the ESP32 to the PSU is required in this build.
 
-5V 12A PSU ───────────► Panel 1
-           └──────────► Panel 2
+The HUB75 ribbon cable already includes ground connections between the ESP32/HUB75 interface and the LED panels.
 
-PSU V- ───────────────► ESP32 GND
-```
+The wiring used for this project is therefore:
+
+Batocera PC
+     │
+     │ USB
+     ▼
+ESP32
+     │
+     │ HUB75 ribbon
+     ▼
+Panel 1
+     │
+     │ HUB75 ribbon
+     ▼
+Panel 2
+
+with panel power handled separately:
+
+5V / 12A PSU
+   │
+   ├──── +5V / V- ───► Panel 1
+   │
+   └──── +5V / V- ───► Panel 2
+
+There is no separate:
+
+ESP32 GND ─────► PSU V-
+
+wire required for the working hardware configuration documented here.
+
+---
+
+Complete Power Wiring
+
+                        AC MAINS
+                            │
+                   ┌────────┼────────┐
+                   │        │        │
+                   ▼        ▼        ▼
+                   L        N        ⏚
+                ┌──────────────────────┐
+                │    5V / 12A PSU      │
+                │                      │
+                │   V-            V+   │
+                └──┬──┬──────────┬──┬─┘
+                   │  │          │  │
+                   │  │          │  │
+                   │  │          │  └────► Panel 2 RED
+                   │  │          └───────► Panel 1 RED
+                   │  │
+                   │  └──────────────────► Panel 2 BLACK
+                   └─────────────────────► Panel 1 BLACK
+
+
+Batocera PC
+     │
+     │ USB
+     ▼
+ESP32-WROOM-32U
+     │
+     │ HUB75
+     ▼
+Panel 1
+     │
+     │ HUB75
+     ▼
+Panel 2
+
+The two systems meet through the HUB75 data connection; no additional ESP32-to-PSU ground jumper is required.
 
 ---
 
